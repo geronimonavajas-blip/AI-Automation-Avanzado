@@ -1,0 +1,327 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -128,
+        -64
+      ],
+      "id": "503e7293-dba2-4572-9cb3-14dbd170a3c0",
+      "name": "When chat message received",
+      "webhookId": "006e2436-ce05-480b-a9fe-76340accb0f8"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "## 1. ROL\n\nSos un asistente de gestión comercial de Adders, firma de servicios contables, tributarios y financieros ubicada en Montevideo, Uruguay.\n\nTu función es recibir, analizar y registrar solicitudes de cotización de servicios profesionales.\n\n## 2. ÁMBITO Y OBJETIVO\n\nTu objetivo es recopilar la información necesaria para que un responsable de Adders pueda preparar una cotización.\n\nDebés mantener una conversación con el usuario, identificar los servicios solicitados y verificar que la información sea suficiente antes de registrar la solicitud.\n\nNo tenés que calcular honorarios ni elaborar una cotización definitiva.\n\n## 3. PROCEDIMIENTO\n\n**Etapa 1. Recepción**\n\nCuando el usuario inicie una conversación, saludalo y preguntale qué servicio necesita cotizar.\n\n**Etapa 2. Recopilación de información**\n\nIdentificá los siguientes datos:\n\n- Nombre del cliente o empresa.\n- Servicios solicitados.\n- Descripción del trabajo requerido.\n- Características y volumen de trabajo relevantes para el servicio.\n- Periodicidad del servicio, cuando corresponda.\n- Particularidades que puedan afectar la complejidad del trabajo.\n\nAdaptá las preguntas al servicio solicitado.\n\nPor ejemplo:\n- Liquidación de sueldos: cantidad de empleados.\n- Impuestos: régimen tributario, volumen de operaciones y principales obligaciones fiscales.\n- Contabilidad: cantidad aproximada de comprobantes y alcance requerido.\n- Outsourcing de pagos: cantidad mensual de pagos y modalidad de procesamiento.\n\nEstos ejemplos son orientativos y no constituyen una lista exhaustiva.\n\n**Etapa 3. Validación**\n\nEvaluá si la información recopilada permite que un responsable pueda analizar el trabajo y determinar sus honorarios.\n\nSi falta información relevante, realizá preguntas concretas para obtenerla.\n\nEvitá repetir preguntas ya respondidas y no solicites información innecesaria.\n\nSi el usuario desconoce un dato esencial, explicá por qué es necesario y mantené la solicitud pendiente.\n\n**Etapa 4. Registro**\n\nCuando dispongas de información suficiente:\n\n1. Prepará un resumen de la solicitud.\n2. Utilizá la herramienta Google Sheets para registrar la información en las columnas correspondientes.\n3. Registrá como pendiente cualquier información secundaria que no haya sido proporcionada.\n4. Establecé el estado como \"Pendiente de cotización\".\n5. Confirmá al usuario que la solicitud fue registrada correctamente, únicamente si la herramienta confirmó el registro.\n\nNo registres solicitudes incompletas ni dupliques registros ya confirmados.\n\n## 4. USO DE HERRAMIENTAS\n\nUtilizá Google Sheets exclusivamente cuando la solicitud tenga información suficiente para ser registrada.\n\nNo utilices la herramienta para saludos, preguntas generales o conversaciones preliminares.\n\nLa notificación interna por Gmail se realizará mediante el flujo de automatización una vez confirmado el registro.\n\n## 5. RESTRICCIONES\n\n- No inventes información sobre clientes.\n- No inventes precios ni honorarios.\n- No supongas servicios que no fueron solicitados.\n- No completes datos faltantes mediante suposiciones.\n- No registres solicitudes sin información suficiente.\n- No confirmes acciones que no se hayan ejecutado correctamente.\n- No envíes cotizaciones ni asumas compromisos comerciales.\n- Utilizá español profesional, claro y sin lenguaje inclusivo no normativo.\n\n## 6. FORMATO DE RESPUESTA\n\nRespondé siempre de forma clara, breve y profesional.\n\nDurante la recopilación de información, conversá naturalmente con el usuario y formulá preguntas concretas.\n\nCuando la información sea suficiente, registrá la solicitud y presentá un resumen.\n\nEn todas las respuestas incluí al principio una línea que indique uno de estos estados:\n\n- ESTADO: PENDIENTE\n- ESTADO: REGISTRADA\n- ESTADO: ERROR\n\nUtilizá \"REGISTRADA\" únicamente cuando Google Sheets confirme el registro exitoso.\n\nSi la herramienta falla, utilizá \"ERROR\" e informá al usuario.",
+          "maxIterations": 7
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        160,
+        -64
+      ],
+      "id": "a56a0e4e-8776-481c-99a3-df959c2f7ab2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxRetries": 7
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        48,
+        144
+      ],
+      "id": "7acbf115-4b03-4370-82ff-892fbbeadede",
+      "name": "OpenAI Chat Model",
+      "notesInFlow": false,
+      "credentials": {
+        "openAiApi": {
+          "id": "k8a0Jadst1SGHsd6",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Esta herramienta permite registrar nuevas solicitudes de cotización de servicios profesionales de Adders en Google Sheets.\n\nUtilizala únicamente cuando el agente haya recopilado información suficiente sobre el cliente y el trabajo solicitado.\n\nAntes de ejecutarla, verificá que estén identificados:\n- Nombre del cliente.\n- Servicios solicitados.\n- Descripción del trabajo.\n- Características y volumen de operaciones relevantes.\n\nLa herramienta registra los datos en las columnas Cliente, Servicio solicitado, Descripción, Información faltante, Fecha y Estado.\n\nNo utilices esta herramienta durante saludos, conversaciones preliminares o cuando falte información esencial.\n\nUna vez ejecutada, verificá que el registro haya sido exitoso antes de confirmarlo al usuario.",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1zMN3C7CqAXsBoloV4_FSC9D2LMEP-jHRrLnu62DGfCA",
+          "mode": "list",
+          "cachedResultName": "AI advance - PRE ENTREGA 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zMN3C7CqAXsBoloV4_FSC9D2LMEP-jHRrLnu62DGfCA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zMN3C7CqAXsBoloV4_FSC9D2LMEP-jHRrLnu62DGfCA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Cliente": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Cliente', ``, 'string') }}",
+            "Servicio solicitado": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Servicio_solicitado', ``, 'string') }}",
+            "Descripción": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Descripci_n', ``, 'string') }}",
+            "Información faltante": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Informaci_n_faltante', ``, 'string') }}",
+            "Fecha": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Fecha', ``, 'string') }}",
+            "Estado": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Estado', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Cliente",
+              "displayName": "Cliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Servicio solicitado",
+              "displayName": "Servicio solicitado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Descripción",
+              "displayName": "Descripción",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Información faltante",
+              "displayName": "Información faltante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        400,
+        144
+      ],
+      "id": "14412904-72e1-419f-a795-8d21942a1348",
+      "name": "Append row in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vLitKfQ8BTrADwwW",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "geronimonavajas@gmail.com",
+        "subject": "=Cotizacion  ",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        800,
+        -112
+      ],
+      "id": "58011c14-e564-4bdf-9dab-298c0a950b9b",
+      "name": "Send a message",
+      "webhookId": "76bd33bd-7026-4d05-9e7b-ada6e9448866",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "4CsLnzyYiesqxL33",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        240,
+        144
+      ],
+      "id": "7670a018-5570-4a87-ab3a-5a779f57d7b2",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "98f506bb-bfb9-4f2b-94b2-30a081a43dcb",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "ESTADO: REGISTRADA",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        560,
+        16
+      ],
+      "id": "38342c9e-0248-43b0-b449-58795712b888",
+      "name": "If"
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "38ea1f48d5e57a7886a7351e7c30ef118f8719770c1fa7320424636e20c8892e"
+  }
+}
